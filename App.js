@@ -12,11 +12,12 @@ import { createMaterialBottomTabNavigator } from "@react-navigation/material-bot
 import { createStackNavigator } from "@react-navigation/stack";
 import { AppRegistry } from "react-native";
 import { useCart } from "./CartProvider";
-import ProductStackNavigator from "./src/components/ProductStackNavigator";
+import ProductDetailScreen from "./src/screens/ProductPage";
 import CollectionListPage from "./src/screens/CollectionListPage";
 import CollectionPage from "./src/screens/CollectionPage";
 import SearchScreen from "./src/screens/SearchScreen";
 import CartPage from "./src/screens/CartPage";
+import Homepage from "./src/screens/Homepage";
 import { CartProvider } from "./CartProvider";
 import { CheckoutProvider } from "./CheckoutContext";
 import Checkout from "./src/screens/Checkout";
@@ -40,17 +41,16 @@ const client = new ApolloClient({
 });
 
 const Tab = createMaterialBottomTabNavigator();
-const CollectionStack = createStackNavigator();
+const MainStack = createStackNavigator();
 
-function CollectionStackNavigator() {
+function MainStackNavigator() {
   return (
-    <CollectionStack.Navigator initialRouteName="Collections">
-      <CollectionStack.Screen
-        name="Collections"
-        component={CollectionListPage}
-      />
-      <CollectionStack.Screen name="Collection" component={CollectionPage} />
-    </CollectionStack.Navigator>
+    <MainStack.Navigator initialRouteName="Homepage">
+      <MainStack.Screen name="Homepage" component={Homepage} />
+      <MainStack.Screen name="CollectionList" component={CollectionListPage} />
+      <MainStack.Screen name="Collection" component={CollectionPage} />
+      <MainStack.Screen name="ProductDetail" component={ProductDetailScreen} />
+    </MainStack.Navigator>
   );
 }
 
@@ -95,31 +95,20 @@ export default function App() {
         <CheckoutProvider>
           <NavigationContainer>
             <Tab.Navigator>
-              <Tab.Screen name="Home">
-                {(props) => (
-                  <ProductStackNavigator
-                    {...props}
-                    checkout={checkout}
-                    setCheckout={setCheckout}
-                  />
-                )}
-              </Tab.Screen>
-              <Tab.Screen
-                name="Collections"
-                component={CollectionStackNavigator}
-              />
+              <Tab.Screen name="Home" component={MainStackNavigator} />
+              <Tab.Screen name="Collections" component={CollectionListPage} />
               <Tab.Screen name="Search" component={SearchScreen} />
               <Tab.Screen
                 name="Cart"
                 component={CartPage}
-                initialParams={{ checkoutUrl: checkout?.webUrl }} // Pass checkoutUrl as initialParams
+                initialParams={{ checkoutUrl: checkout?.webUrl }}
               />
               <Tab.Screen
                 name="Checkout"
                 component={Checkout}
                 initialParams={{ checkoutUrl: checkout?.webUrl }}
                 options={{
-                  tabBarVisible: false, // Hide the tab bar
+                  tabBarVisible: false,
                 }}
               />
             </Tab.Navigator>

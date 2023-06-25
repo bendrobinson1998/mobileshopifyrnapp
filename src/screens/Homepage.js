@@ -88,9 +88,8 @@ function HomeScreen({ navigation }) {
       <TouchableOpacity
         style={{ flex: 1, margin: 10 }}
         onPress={() =>
-          navigation.navigate("Collections", {
-            screen: "Collection",
-            params: { collectionHandle: item.handle },
+          navigation.navigate("Collection", {
+            collectionHandle: item.handle,
           })
         }
       >
@@ -151,9 +150,8 @@ function HomeScreen({ navigation }) {
           <CustomButton
             title="Find Your Dream Bedlinen"
             onPress={() =>
-              navigation.navigate("Collections", {
-                screen: "Collection",
-                params: { collectionHandle: specificCollectionHandle },
+              navigation.navigate("Collection", {
+                collectionHandle: specificCollectionHandle,
               })
             }
           />
@@ -173,9 +171,8 @@ function HomeScreen({ navigation }) {
       />
       <TouchableOpacity
         onPress={() =>
-          navigation.navigate("Collections", {
-            screen: "Collection",
-            params: { collectionHandle: specificCollectionHandle },
+          navigation.navigate("Collection", {
+            collectionHandle: specificCollectionHandle,
           })
         }
       >
