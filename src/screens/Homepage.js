@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Dimensions,
   Button,
+  ScrollView,
 } from "react-native";
 import { useApolloClient } from "@apollo/client";
 import { gql } from "@apollo/client";
@@ -52,7 +53,7 @@ function CustomButton({ title, onPress }) {
         backgroundColor: "white",
         padding: 13,
         borderRadius: 5,
-        marginTop: 20,
+        marginTop: 30,
       }}
     >
       <Text style={{ color: "black", fontSize: 16 }}>{title}</Text>
@@ -95,7 +96,7 @@ function HomeScreen({ navigation }) {
       >
         {imageUrl && (
           <Image
-            style={{ width: 200, height: "50%" }}
+            style={{ width: 200, height: 200 }}
             source={{ uri: imageUrl }}
           />
         )}
@@ -114,7 +115,7 @@ function HomeScreen({ navigation }) {
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <ScrollView>
       {/* Promotion Banner */}
       <View
         style={{
@@ -163,16 +164,44 @@ function HomeScreen({ navigation }) {
         Welcome to Roomie Design
       </Text>
 
-      <View style={{ flex: 1 }}>
-        <FlatList
-          data={collections}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-        />
-      </View>
-    </View>
+      <FlatList
+        data={collections}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id}
+        horizontal={true}
+        showsHorizontalScrollIndicator={false}
+      />
+      <TouchableOpacity
+        onPress={() =>
+          navigation.navigate("Collections", {
+            screen: "Collection",
+            params: { collectionHandle: specificCollectionHandle },
+          })
+        }
+      >
+        <View
+          style={{
+            width: windowWidth,
+            height: bannerHeight / 4,
+            backgroundColor: "#967bb6",
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: 20,
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 19,
+              color: "white",
+              textAlign: "center",
+              fontWeight: "bold",
+            }}
+          >
+            Shop Luxury Duvets Now &#8594;
+          </Text>
+        </View>
+      </TouchableOpacity>
+    </ScrollView>
   );
 }
 

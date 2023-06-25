@@ -11,8 +11,8 @@ import {
 import { gql, useQuery } from "@apollo/client";
 import { useNavigation, useRoute } from "@react-navigation/native";
 
-const GET_PRODUCTS_COLLECTION = gql`
-  query CollectionByHandle($handle: String!) {
+const GET_PRODUCTS_AND_COLLECTIONS = gql`
+  query CollectionAndProducts($handle: String!, $first: Int!) {
     collectionByHandle(handle: $handle) {
       id
       description
@@ -47,6 +47,15 @@ const GET_PRODUCTS_COLLECTION = gql`
         }
       }
     }
+    collections(first: $first) {
+      edges {
+        node {
+          id
+          title
+          handle
+        }
+      }
+    }
   }
 `;
 
@@ -62,13 +71,13 @@ const styles = StyleSheet.create({
   item: {
     flex: 1,
     margin: 10,
-    backgroundColor: "#f8f8f8",
+    // backgroundColor: "#f8f8f8",
     padding: 10,
     elevation: 2, // for Android
   },
   image: {
     width: "100%",
-    height: "75%",
+    height: 250,
     resizeMode: "cover",
   },
   title: {
@@ -95,15 +104,32 @@ const styles = StyleSheet.create({
     color: "#aaa",
     textDecorationLine: "line-through",
   },
+  pill: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 30,
+    backgroundColor: "#4287f5",
+    marginHorizontal: 5,
+    marginTop: 10,
+    marginBottom: 10,
+    height: 35,
+  },
+  pillText: {
+    color: "#fff",
+  },
 });
-
+const PillButton = ({ title, onPress }) => (
+  <TouchableOpacity style={styles.pill} onPress={onPress}>
+    <Text style={styles.pillText}>{title}</Text>
+  </TouchableOpacity>
+);
 const CollectionPage = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const collectionHandle = route.params ? route.params.collectionHandle : "";
 
-  const { loading, error, data } = useQuery(GET_PRODUCTS_COLLECTION, {
-    variables: { handle: collectionHandle },
+  const { loading, error, data } = useQuery(GET_PRODUCTS_AND_COLLECTIONS, {
+    variables: { handle: collectionHandle, first: 20 },
   });
 
   if (loading) {
@@ -113,10 +139,12 @@ const CollectionPage = () => {
       </View>
     );
   }
+
   if (error) return <Text>Error! {error.message}</Text>;
   if (!data.collectionByHandle) return <Text>No collection found.</Text>;
 
   const productData = data.collectionByHandle.products.edges;
+  const collectionItems = data.collections.edges;
 
   const renderItem = ({ item }) => (
     <TouchableOpacity
@@ -137,8 +165,26 @@ const CollectionPage = () => {
     </TouchableOpacity>
   );
 
+  const renderCollectionItem = ({ item }) => (
+    <PillButton
+      title={item.node.title}
+      onPress={() =>
+        navigation.navigate("Collection", {
+          collectionHandle: item.node.handle,
+        })
+      }
+    />
+  );
+
   return (
     <View style={{ flex: 1 }}>
+      <FlatList
+        horizontal
+        data={collectionItems}
+        renderItem={renderCollectionItem}
+        keyExtractor={(item) => item.node.id}
+        showsHorizontalScrollIndicator={false}
+      />
       <FlatList
         data={productData}
         renderItem={renderItem}
